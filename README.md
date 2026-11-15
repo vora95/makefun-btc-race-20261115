@@ -1,5 +1,7 @@
 # Deep-Dip BTC Bot — make.fun btc-race-24h-20261115-0828
 
+[![Rank](https://make.fun/badge/btc-race-24h-20261115-0828/vora95/makefun-btc-race-20261115/rank.svg)](https://make.fun/bounty/btc-race-24h-20261115-0828) [![Reward](https://make.fun/badge/btc-race-24h-20261115-0828/vora95/makefun-btc-race-20261115/reward.svg)](https://make.fun/bounty/btc-race-24h-20261115-0828)
+
 A bot that trades cbBTC/USDC minute by minute in the make.fun 24-hour
 paper-money race. Long only, one position, full size.
 
