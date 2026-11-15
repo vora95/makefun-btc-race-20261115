@@ -47,6 +47,15 @@ const TARGET_NUM = 10120n;
 const TARGET_DEN = 10000n;
 const MAX_SLIPPAGE_BPS = 10_000;
 
+/** Exact integer comparison: is `now` at least `pct` below `then`? */
+function fellAtLeast(now: bigint, then: bigint, num: bigint, den: bigint): boolean {
+  return now * den <= then * num;
+}
+/** Exact integer comparison: is `now` at least `pct` above `ref`? */
+function roseAtLeast(now: bigint, ref: bigint, num: bigint, den: bigint): boolean {
+  return now * den >= ref * num;
+}
+
 /** Closes of CBBTC, one per batch, in batch order. */
 const closes: bigint[] = [];
 /** Close at the bar on which the current position's buy was decided. */
@@ -63,7 +72,7 @@ await runBars({
     const held = state.positions.get(SYMBOL);
     if (held !== undefined && held.qty > 0n) {
       // Holding: sell everything once the bounce target is met.
-      if (entryClose !== null && close * TARGET_DEN >= entryClose * TARGET_NUM) {
+      if (entryClose !== null && roseAtLeast(close, entryClose, TARGET_NUM, TARGET_DEN)) {
         entryClose = null;
         return [{ side: 'sell', symbol: SYMBOL, qty: held.qty, max_slippage_bps: MAX_SLIPPAGE_BPS }];
       }
@@ -73,7 +82,7 @@ await runBars({
     // Flat: buy everything on a deep 30-minute dip.
     if (i >= LOOKBACK_BARS) {
       const then = closes[i - LOOKBACK_BARS]!;
-      if (close * DIP_DEN <= then * DIP_NUM) {
+      if (fellAtLeast(close, then, DIP_NUM, DIP_DEN)) {
         if (state.cash < BigInt(state.hello.fees.min_notional_quote_units)) return [];
         entryClose = close;
         return [{ side: 'buy', symbol: SYMBOL, notional_quote_units: state.cash, max_slippage_bps: MAX_SLIPPAGE_BPS }];
